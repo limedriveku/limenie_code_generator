@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Generator Karakter Acak</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#60a5fa;--muted:#94a3b8;--glass:rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#071029 0%,#081226 100%);color:#e6eef8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:100%;max-width:720px;background:var(--card);border-radius:12px;padding:28px;box-shadow:0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 10px;font-size:20px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .row{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+    input[type="number"], input[type="text"], select{flex:1;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:var(--glass);color:inherit;font-size:14px}
+    input[readonly]{cursor:copy}
+    button{background:var(--accent);border:none;padding:10px 14px;border-radius:8px;color:#04233a;font-weight:600;cursor:pointer}
+    button:active{transform:translateY(1px)}
+    .controls{display:flex;gap:10px;align-items:center}
+    .muted{color:var(--muted);font-size:13px}
+    .small{font-size:12px;color:var(--muted)}
+    .flex{display:flex;gap:8px}
+    .chip{padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-size:13px}
+    .error{color:#ffb4b4;font-size:13px}
+    footer{margin-top:18px;color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h1>Generator Karakter Acak</h1>
+    <p class="lead">Masukkan jumlah digit yang ingin di-generate, lalu tekan <strong>Generate</strong>. Kamu bisa memilih jenis karakter.</p>
+
+    <div class="row">
+      <label for="length" class="small" style="width:110px;flex:0 0 110px">Jumlah digit</label>
+      <input id="length" type="number" min="1" placeholder="Misal: 12" value="12" />
+      <div style="flex:0 0 120px">
+        <button id="generate">Generate</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <label class="small" style="width:110px;flex:0 0 110px">Jenis karakter</label>
+      <select id="charset">
+        <option value="alnum">Alfanumerik (A–Z, a–z, 0–9)</option>
+        <option value="hex">Hex (0–9, a–f)</option>
+        <option value="numeric">Angka saja (0–9)</option>
+        <option value="base64">Base64</option>
+        <option value="all">Semua (huruf, angka, simbol)</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label for="output" class="small" style="width:110px;flex:0 0 110px">Hasil</label>
+      <input id="output" type="text" readonly placeholder="Hasil akan muncul di sini" />
+      <div style="flex:0 0 120px" class="flex">
+        <button id="copy">Copy</button>
+        <button id="clear">Clear</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div style="width:110px"></div>
+      <div>
+        <div id="msg" class="muted">Tekan <strong>Generate</strong> untuk membuat string acak.</div>
+        <div id="error" class="error" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <footer>Simple HTML + JavaScript — tanpa library eksternal.</footer>
+  </div>
+
+  <script>
+    const elLength = document.getElementById('length');
+    const elGenerate = document.getElementById('generate');
+    const elOutput = document.getElementById('output');
+    const elCopy = document.getElementById('copy');
+    const elClear = document.getElementById('clear');
+    const elCharset = document.getElementById('charset');
+    const elMsg = document.getElementById('msg');
+    const elError = document.getElementById('error');
+
+    const charsets = {
+      alnum: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+      hex: '0123456789abcdef',
+      numeric: '0123456789',
+      base64: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
+      all: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+-={}[]|:;\"'<>,.?/`\\"
+    };
+
+    function secureRandomInt(max) {
+      // return integer [0, max)
+      const array = new Uint32Array(1);
+      window.crypto.getRandomValues(array);
+      return array[0] % max;
+    }
+
+    function generateRandom(len, pool) {
+      if (!len || len <= 0) return '';
+      let out = '';
+      const pLen = pool.length;
+      for (let i = 0; i < len; i++) {
+        out += pool[secureRandomInt(pLen)];
+      }
+      return out;
+    }
+
+    elGenerate.addEventListener('click', () => {
+      elError.textContent = '';
+      let n = Number(elLength.value);
+      if (!Number.isFinite(n) || n <= 0) {
+        elError.textContent = 'Masukkan angka bulat positif untuk jumlah digit.';
+        return;
+      }
+      if (!Number.isInteger(n)) n = Math.floor(n);
+      if (n > 100000) {
+        elError.textContent = 'Batas maksimum 100000 digit untuk mencegah pemakaian memori berlebih.';
+        return;
+      }
+
+      const pool = charsets[elCharset.value] || charsets.alnum;
+      // jika pool kecil dan user minta banyak, tetap aman karena kita menggunakan random sampling with replacement
+      const res = generateRandom(n, pool);
+      elOutput.value = res;
+      elMsg.textContent = `Generated ${n} karakter. Klik Copy untuk menyalin.`;
+    });
+
+    elCopy.addEventListener('click', async () => {
+      if (!elOutput.value) return;
+      try {
+        await navigator.clipboard.writeText(elOutput.value);
+        elMsg.textContent = 'Tersalin ke clipboard.';
+      } catch (e) {
+        elError.textContent = 'Gagal menyalin ke clipboard. Gunakan Ctrl+C/Cmd+C.';
+      }
+    });
+
+    elClear.addEventListener('click', () => {
+      elOutput.value = '';
+      elMsg.textContent = 'Hasil dibersihkan.';
+      elError.textContent = '';
+    });
+
+    // support pressing Enter in the length field
+    elLength.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') elGenerate.click();
+    });
+
+    // make output clickable to select all
+    elOutput.addEventListener('click', () => elOutput.select());
+  </script>
+</body>
+</html>
