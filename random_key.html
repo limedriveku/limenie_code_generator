@@ -36,7 +36,9 @@
   <div id="output" class="output">Menunggu parameter...</div>
   <div class="info">
     Gunakan URL seperti:<br>
-    <code>?length=16&case=true</code> atau <code>?length=10&case=false</code>
+    <code>?length=16&case=true</code> atau <code>?length=10&case=false</code><br><br>
+    Contoh <b>curl</b>:<br>
+    <code>curl "https://username.github.io/random/?length=12&case=false"</code>
   </div>
 
   <script>
@@ -52,7 +54,6 @@
       let chars = "abcdefghijklmnopqrstuvwxyz";
       if (caseSensitive) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       chars += "0123456789";
-
       let result = "";
       for (let i = 0; i < length; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -62,12 +63,15 @@
 
     const { length, caseSensitive } = getQueryParams();
     const outputEl = document.getElementById("output");
+    const randomStr = generateRandomString(length, caseSensitive);
+    const ua = navigator.userAgent.toLowerCase();
 
-    if (length > 0) {
-      const randomStr = generateRandomString(length, caseSensitive);
-      outputEl.textContent = randomStr;
+    // Jika diakses lewat curl atau non-browser, tampilkan plain text saja
+    if (ua.includes("curl") || ua.includes("wget") || ua.includes("httpie")) {
+      document.write(randomStr);
+      document.close();
     } else {
-      outputEl.textContent = "Parameter tidak valid.";
+      outputEl.textContent = randomStr;
     }
   </script>
 </body>
