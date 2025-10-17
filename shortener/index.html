@@ -31,26 +31,23 @@
     position: relative;
   }
 
-  /* Background layers */
+  /* Background layer */
   .bg {
     position: absolute;
     inset: 0;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    opacity: 0;
-    transition: opacity 2.5s ease-in-out;
+    opacity: 1;
     z-index: -3;
-    filter: brightness(1.08) blur(3px);
+    filter: brightness(1.05) blur(3px);
   }
-
-  #bg1 { opacity: 1; }
 
   /* Light overlay (misty tone) */
   #overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(255,255,255,0.3), rgba(180,190,210,0.45));
+    background: radial-gradient(circle at center, rgba(255,255,255,0.25), rgba(180,190,210,0.45));
     mix-blend-mode: lighten;
     z-index: -2;
     animation: aura 14s ease-in-out infinite alternate;
@@ -122,9 +119,7 @@
 </style>
 </head>
 <body>
-  <div id="bg1" class="bg"></div>
-  <div id="bg2" class="bg"></div>
-  <div id="bg3" class="bg"></div>
+  <div id="bg" class="bg"></div>
   <div id="overlay"></div>
 
   <div class="frieren-box">
@@ -133,20 +128,12 @@
   </div>
 
   <script>
-    // Background image list
+    // === RANDOM BACKGROUND ===
     const bgPaths = ["bg1.webp", "bg2.webp", "bg3.webp"];
-    const bgEls = [document.getElementById("bg1"), document.getElementById("bg2"), document.getElementById("bg3")];
-    bgEls.forEach((el, i) => el.style.backgroundImage = `url('${bgPaths[i]}')`);
+    const randomBg = bgPaths[Math.floor(Math.random() * bgPaths.length)];
+    document.getElementById("bg").style.backgroundImage = `url('${randomBg}')`;
 
-    let current = 0;
-    setInterval(() => {
-      const next = (current + 1) % bgEls.length;
-      bgEls[current].style.opacity = "0";
-      bgEls[next].style.opacity = "1";
-      current = next;
-    }, 15000);
-
-    // Handle link decoding
+    // === TIMER & REDIRECT ===
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const t = parseInt(params.get("t") || "5");
