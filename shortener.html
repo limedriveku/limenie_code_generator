@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go to Link</title>
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  button {
+    background-color: #1a1a1a;
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    font-size: 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  button:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+  }
+  .container {
+    text-align: center;
+  }
+  .info {
+    font-size: 14px;
+    color: #555;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <button id="goBtn">Go to Link</button>
+    <div class="info" id="infoText"></div>
+  </div>
+
+<script>
+function base64UrlDecode(str) {
+  // Ubah base64 URL-safe ke standar
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  try {
+    return decodeURIComponent(escape(atob(str)));
+  } catch {
+    return null;
+  }
+}
+
+const params = new URLSearchParams(window.location.search);
+const code = params.get('code');
+const decodedLink = code ? base64UrlDecode(code) : null;
+
+const btn = document.getElementById('goBtn');
+const info = document.getElementById('infoText');
+
+if (decodedLink) {
+  info.innerText = `Decoded link: ${decodedLink}`;
+  btn.addEventListener('click', () => {
+    window.location.href = decodedLink;
+  });
+} else {
+  info.innerText = "Query ?code=<base64url> not found or invalid.";
+  btn.disabled = true;
+  btn.style.opacity = "0.6";
+  btn.style.cursor = "not-allowed";
+}
+</script>
+</body>
+</html>
