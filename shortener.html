@@ -1,101 +1,115 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>LimeLinkku</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Sawarabi+Mincho&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    height: 100vh;
-    overflow: hidden;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #e7e9ee;
-    position: relative;
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Poppins',sans-serif;
+    background:#e7e9ee;
+    position:relative;
+    overflow:hidden;
+    color:#222;
   }
 
-  .bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    opacity: 0.75;
-    overflow: hidden;
+  /* background container */
+  .bgwrap{position:absolute;inset:0;z-index:0;pointer-events:none}
+
+  .bg-single{
+    position:absolute;inset:0;
+    background-size:cover;
+    background-position:center;
+    opacity:.78;
   }
 
-  .bg img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
+  /* versi versus: dua layer yang dipotong diagonal */
+  .bg-left,.bg-right{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    background-size:cover;
+    background-position:center;
+    opacity:.9;
   }
 
-  .bg-left {
-    clip-path: polygon(0 0, 50% 0, 45% 100%, 0% 100%);
+  /* potongan diagonal: dari ujung atas ke ujung bawah */
+  /* menggunakan polygon sehingga garisnya miring dari top edge ke bottom edge */
+  .bg-left{clip-path:polygon(0 0, 52% 0, 48% 100%, 0 100%);}
+  .bg-right{clip-path:polygon(52% 0, 100% 0, 100% 100%, 48% 100%);}
+
+  /* garis pemisah tipis (dari atas ke bawah, sedikit miring untuk efek) */
+  .divider{
+    position:absolute;
+    left:50%;
+    top:0;
+    height:100%;
+    width:3px; /* ketebalan garis; ubah jika mau lebih tipis */
+    transform:translateX(-50%) rotate(4deg); /* sedikit rotasi untuk kesan diagonal */
+    background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(200,200,210,0.7));
+    z-index:2;
+    pointer-events:none;
+    mix-blend-mode:overlay;
+    filter:drop-shadow(0 0 6px rgba(0,0,0,0.08));
   }
 
-  .bg-right {
-    clip-path: polygon(55% 0, 100% 0, 100% 100%, 50% 100%);
+  /* overlay ringan agar teks terbaca */
+  .overlay{position:absolute;inset:0;background:linear-gradient(135deg, rgba(255,255,255,0.45), rgba(210,210,220,0.15));z-index:1}
+
+  .container{
+    position:relative;
+    z-index:3;
+    text-align:center;
+    padding:24px;
+    max-width:92%;
   }
 
-  .overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top right, rgba(255,255,255,0.4), rgba(190,190,190,0.2));
-    z-index: 1;
+  h1{
+    font-family:'Sawarabi Mincho',serif;
+    font-size:2.1rem;
+    margin-bottom:22px;
+    color:#2d2d2d;
+    text-shadow:0 2px 6px rgba(255,255,255,0.8);
   }
 
-  .container {
-    position: relative;
-    z-index: 3;
-    text-align: center;
+  button{
+    --g1:#bcc3ce;
+    --g2:#d8e1eb;
+    background:linear-gradient(90deg,var(--g1),var(--g2));
+    border:none;
+    color:#222;
+    padding:14px 48px;
+    font-size:18px;
+    border-radius:40px;
+    cursor:pointer;
+    box-shadow:0 6px 22px rgba(160,160,180,0.35);
+    transition:transform .18s ease,box-shadow .18s ease;
   }
 
-  h1 {
-    font-family: 'Sawarabi Mincho', serif;
-    font-size: 2.2em;
-    color: #2d2d2d;
-    text-shadow: 0 2px 4px rgba(255,255,255,0.8);
-    margin-bottom: 28px;
-  }
+  button:disabled{opacity:.9;cursor:not-allowed}
+  button:enabled:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(150,150,180,0.45)}
 
-  button {
-    background: linear-gradient(90deg, #bcc3ce, #d8e1eb);
-    border: none;
-    color: #222;
-    padding: 16px 56px;
-    font-size: 18px;
-    border-radius: 40px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    box-shadow: 0 0 25px rgba(190, 190, 200, 0.5);
-  }
-
-  button:hover:enabled {
-    transform: scale(1.05);
-    box-shadow: 0 0 35px rgba(210, 210, 220, 0.7);
-  }
-
-  button:disabled {
-    opacity: 0.8;
-    cursor: not-allowed;
-  }
-
-  .info {
-    margin-top: 25px;
-    font-size: 14px;
-    color: #555;
+  .info{margin-top:20px;font-size:.95rem;color:#444;word-break:break-all}
+  @media (max-width:520px){
+    h1{font-size:1.6rem}
+    button{padding:12px 30px;font-size:16px}
   }
 </style>
 </head>
 <body>
 
-<div class="bg">
-  <img id="bgLeft" class="bg-left" src="" alt="">
-  <img id="bgRight" class="bg-right" src="" alt="">
+<div class="bgwrap" id="bgwrap">
+  <!-- area bg; will be set by JS -->
+  <div id="singleBg" class="bg-single" style="display:none"></div>
+  <div id="leftBg" class="bg-left" style="display:none"></div>
+  <div id="rightBg" class="bg-right" style="display:none"></div>
+  <div class="divider" id="divider" style="display:none"></div>
 </div>
 
 <div class="overlay"></div>
@@ -107,64 +121,96 @@
 </div>
 
 <script>
-function base64UrlDecode(str) {
-  str = str.replace(/-/g, '+').replace(/_/g, '/');
-  while (str.length % 4) str += '=';
-  try { return decodeURIComponent(escape(atob(str))); }
-  catch { return null; }
+/* util: decode base64 url-safe */
+function base64UrlDecode(s){
+  s = s.replace(/-/g,'+').replace(/_/g,'/');
+  while(s.length % 4) s += '=';
+  try { return decodeURIComponent(escape(atob(s))); }
+  catch(e){ return null; }
 }
 
-// Ambil parameter URL
+/* params */
 const params = new URLSearchParams(window.location.search);
 const code = params.get('code');
-const t = parseInt(params.get('t')) || 5;
+const t = Math.max(0, parseInt(params.get('t')) || 5);
 const redirect = params.get('redirect') === 'true';
 
-const decodedLink = code ? base64UrlDecode(code) : null;
+const decoded = code ? base64UrlDecode(code) : null;
 
-// Random background antara bg1.webp & bg2.webp
-const bgList = ['bg1.webp', 'bg2.webp'];
-const pick1 = bgList[Math.floor(Math.random() * bgList.length)];
-let pick2;
-do { pick2 = bgList[Math.floor(Math.random() * bgList.length)]; }
-while (pick2 === pick1);
+/* background logic:
+   3 kemungkinan:
+   - single bg1
+   - single bg2
+   - versus (gabungan bg1 & bg2)
+*/
+const bgList = ['bg1.webp','bg2.webp'];
+const mode = Math.floor(Math.random()*3); // 0,1,2
 
-document.getElementById('bgLeft').src = pick1;
-document.getElementById('bgRight').src = pick2;
+const singleEl = document.getElementById('singleBg');
+const leftEl = document.getElementById('leftBg');
+const rightEl = document.getElementById('rightBg');
+const dividerEl = document.getElementById('divider');
 
+if(mode === 0){
+  // single bg1
+  singleEl.style.display = 'block';
+  singleEl.style.backgroundImage = `url('${bgList[0]}')`;
+  leftEl.style.display = rightEl.style.display = 'none';
+  dividerEl.style.display = 'none';
+} else if(mode === 1){
+  // single bg2
+  singleEl.style.display = 'block';
+  singleEl.style.backgroundImage = `url('${bgList[1]}')`;
+  leftEl.style.display = rightEl.style.display = 'none';
+  dividerEl.style.display = 'none';
+} else {
+  // versus: pick both but order random
+  singleEl.style.display = 'none';
+  let order = Math.random() < 0.5 ? [0,1] : [1,0];
+  leftEl.style.display = rightEl.style.display = 'block';
+  leftEl.style.backgroundImage = `url('${bgList[order[0]]}')`;
+  rightEl.style.backgroundImage = `url('${bgList[order[1]]}')`;
+  dividerEl.style.display = 'block';
+}
+
+/* UI elements */
 const btn = document.getElementById('goBtn');
 const info = document.getElementById('infoText');
 const titleText = document.getElementById('titleText');
 
-if (!decodedLink) {
+if(!decoded){
   info.innerText = "❌ Query ?code=<base64url> tidak ditemukan atau tidak valid.";
   btn.innerText = "Invalid Code";
   btn.disabled = true;
   titleText.innerText = "Terjadi kesalahan";
 } else {
+  // initial button shows countdown number
   let timeLeft = t;
-  btn.innerText = timeLeft;
+  btn.disabled = true;
+  btn.innerText = timeLeft.toString();
+  info.innerText = `Decoded link: ${decoded}`;
 
-  const countdown = setInterval(() => {
+  const countdown = setInterval(()=>{
     timeLeft--;
-    if (timeLeft > 0) {
-      btn.innerText = timeLeft;
+    if(timeLeft > 0){
+      btn.innerText = timeLeft.toString();
     } else {
       clearInterval(countdown);
+      // enable button and change title/text
       btn.disabled = false;
-      btn.innerText = "Go to Link";
+      btn.innerText = "Go to link";
       titleText.innerText = "Link siap";
-      if (redirect) {
-        setTimeout(() => {
-          window.location.href = decodedLink;
-        }, 500);
+      // if redirect flag, auto-redirect now
+      if(redirect){
+        // small delay for UX (allow button text change to render)
+        setTimeout(()=> { window.location.href = decoded; }, 300);
       }
     }
-  }, 1000);
+  },1000);
 
-  info.innerText = `Decoded link: ${decodedLink}`;
-  btn.addEventListener('click', () => {
-    window.location.href = decodedLink;
+  // click action when countdown finished
+  btn.addEventListener('click', ()=>{
+    if(!btn.disabled) window.location.href = decoded;
   });
 }
 </script>
