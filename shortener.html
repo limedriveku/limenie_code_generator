@@ -1,144 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Go to Link ✨</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Sawarabi+Mincho&display=swap" rel="stylesheet">
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at top left, #ffd6e0, #a7c7e7);
-    background-size: cover;
-    overflow: hidden;
-    font-family: 'Poppins', sans-serif;
-  }
-
-  /* Anime bokeh effect */
-  .bokeh {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
-  }
-
-  .bokeh span {
-    position: absolute;
-    display: block;
-    width: 20px;
-    height: 20px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 50%;
-    animation: float 10s infinite;
-  }
-
-  @keyframes float {
-    from {
-      transform: translateY(0) scale(1);
-      opacity: 1;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frieren Link Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
     }
-    to {
-      transform: translateY(-800px) scale(0.5);
-      opacity: 0;
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f4fb;
+      position: relative;
+      color: #333;
     }
-  }
 
-  .container {
-    text-align: center;
-    position: relative;
-    z-index: 2;
-  }
+    /* Latar belakang karakter Frieren */
+    .bg-image {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 50%;
+      max-width: 600px;
+      height: auto;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-  h1 {
-    font-family: 'Sawarabi Mincho', serif;
-    font-size: 2.2em;
-    color: #222;
-    margin-bottom: 1.2em;
-    text-shadow: 0 2px 4px rgba(255,255,255,0.8);
-  }
+    .container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 20px;
+      max-width: 90%;
+    }
 
-  button {
-    background: linear-gradient(90deg, #ff7ac3, #6b9fff);
-    border: none;
-    color: white;
-    padding: 14px 40px;
-    font-size: 18px;
-    border-radius: 40px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    box-shadow: 0 0 20px rgba(255, 170, 255, 0.6);
-    animation: pulse 3s infinite;
-  }
+    h1 {
+      font-size: 2.4em;
+      margin-bottom: 1.2em;
+      color: #2f2a3e;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+    }
 
-  button:hover {
-    transform: scale(1.07);
-    box-shadow: 0 0 30px rgba(255, 200, 255, 0.9);
-  }
+    button {
+      background: linear-gradient(90deg, #8c7afe, #a3d8ff);
+      border: none;
+      color: white;
+      padding: 16px 48px;
+      font-size: 1.2em;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 0 20px rgba(140, 122, 254, 0.6);
+    }
 
-  @keyframes pulse {
-    0% { box-shadow: 0 0 10px rgba(255, 170, 255, 0.4); }
-    50% { box-shadow: 0 0 30px rgba(255, 200, 255, 0.8); }
-    100% { box-shadow: 0 0 10px rgba(255, 170, 255, 0.4); }
-  }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(140, 122, 254, 0.9);
+    }
 
-  .info {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #333;
-  }
-</style>
+    .info {
+      margin-top: 16px;
+      font-size: 0.9em;
+      color: #555;
+      word-break: break-all;
+    }
+  </style>
 </head>
 <body>
+  <!-- Ganti src ke gambar Frieren PNG transparan milikmu atau yang bebas digunakan -->
+  <img class="bg-image" src="https://4kwallpapers.com/anime/frieren-beyond-15157.html" alt="Frieren Background" />
 
-<div class="bokeh">
-  <span style="left:10%;animation-delay:0s;"></span>
-  <span style="left:25%;animation-delay:2s;"></span>
-  <span style="left:50%;animation-delay:4s;"></span>
-  <span style="left:70%;animation-delay:1s;"></span>
-  <span style="left:85%;animation-delay:3s;"></span>
-</div>
+  <div class="container">
+    <h1>Portal Frieren ✨</h1>
+    <button id="goBtn">Go to Link</button>
+    <div class="info" id="infoText"></div>
+  </div>
 
-<div class="container">
-  <h1>🌸 Go to Link Portal 🌸</h1>
-  <button id="goBtn">Go to Link</button>
-  <div class="info" id="infoText"></div>
-</div>
+  <script>
+    function base64UrlDecode(str) {
+      str = str.replace(/-/g, '+').replace(/_/g, '/');
+      while (str.length % 4) str += '=';
+      try {
+        return decodeURIComponent(escape(atob(str)));
+      } catch (e) {
+        return null;
+      }
+    }
 
-<script>
-function base64UrlDecode(str) {
-  str = str.replace(/-/g, '+').replace(/_/g, '/');
-  while (str.length % 4) str += '=';
-  try {
-    return decodeURIComponent(escape(atob(str)));
-  } catch {
-    return null;
-  }
-}
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const decodedLink = code ? base64UrlDecode(code) : null;
 
-const params = new URLSearchParams(window.location.search);
-const code = params.get('code');
-const decodedLink = code ? base64UrlDecode(code) : null;
+    const btn = document.getElementById('goBtn');
+    const info = document.getElementById('infoText');
 
-const btn = document.getElementById('goBtn');
-const info = document.getElementById('infoText');
-
-if (decodedLink) {
-  info.innerText = `Decoded link: ${decodedLink}`;
-  btn.addEventListener('click', () => {
-    window.location.href = decodedLink;
-  });
-} else {
-  info.innerText = "❌ Query ?code=<base64url> not found or invalid.";
-  btn.disabled = true;
-  btn.style.opacity = "0.6";
-  btn.style.cursor = "not-allowed";
-}
-</script>
-
+    if (decodedLink) {
+      info.innerText = `Decoded link: ${decodedLink}`;
+      btn.addEventListener('click', () => {
+        window.location.href = decodedLink;
+      });
+    } else {
+      info.innerText = "❌ Query ?code=<base64url> tidak ditemukan atau tidak valid.";
+      btn.disabled = true;
+      btn.style.opacity = "0.6";
+      btn.style.cursor = "not-allowed";
+    }
+  </script>
 </body>
 </html>
