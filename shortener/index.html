@@ -9,19 +9,27 @@
     --theme-color: #cfd3da;
   }
 
-  body {
+  html, body {
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
     font-family: "Poppins", sans-serif;
     color: white;
-    background-color: #101214;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     text-align: center;
     overflow: hidden;
+    background-color: #101214;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    animation: fadeIn 1.5s ease;
   }
 
   h1 {
@@ -48,29 +56,18 @@
     box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
   }
 
-  #background {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background-size: cover;
-    background-position: center;
-    animation: fadeIn 1.5s ease;
-  }
-
-  /* Mode versus: 3 gambar penuh */
-  .versus {
-    background: 
-      url('bg3_b.webp') left center / 100% 100% no-repeat,
-      url('line.webp') center center / 100% 100% no-repeat,
-      url('bg3_a.webp') right center / 100% 100% no-repeat;
-    background-blend-mode: normal;
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.25));
+  /* Mode versus: tiga gambar sejajar horizontal */
+  body.versus {
+    background:
+      url('bg3_b.webp') left center / 50% 100% no-repeat,
+      url('line.webp') center center / auto 100% no-repeat,
+      url('bg3_a.webp') right center / 50% 100% no-repeat;
     animation: auraPulse 3s ease-in-out infinite alternate;
   }
 
   @keyframes auraPulse {
-    0% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.25)); }
-    100% { filter: drop-shadow(0 0 20px rgba(255,255,255,0.5)); }
+    0% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+    100% { filter: drop-shadow(0 0 18px rgba(255,255,255,0.45)); }
   }
 
   @keyframes fadeIn {
@@ -79,8 +76,7 @@
   }
 </style>
 </head>
-<body>
-  <div id="background"></div>
+<body class="versus">
   <h1 id="status">Mempersiapkan link...</h1>
   <button id="goBtn" disabled>Menunggu...</button>
 
@@ -89,17 +85,6 @@
     const code = params.get("code");
     const t = parseInt(params.get("t") || "5");
     const redirect = params.get("redirect") === "true";
-
-    // Pilihan background
-    const bgMode = Math.floor(Math.random() * 3);
-    const bgDiv = document.getElementById("background");
-    if (bgMode === 0) {
-      bgDiv.style.backgroundImage = "url('bg1.webp')";
-    } else if (bgMode === 1) {
-      bgDiv.style.backgroundImage = "url('bg2.webp')";
-    } else {
-      bgDiv.classList.add("versus");
-    }
 
     const btn = document.getElementById("goBtn");
     const status = document.getElementById("status");
