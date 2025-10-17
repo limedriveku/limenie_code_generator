@@ -1,132 +1,153 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LimeLinkku</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0; height: 100vh; display: flex;
-      align-items: center; justify-content: center;
-      font-family: 'Poppins', sans-serif;
-      background: #f5f5f5; color: #2f2a3e; position: relative; overflow: hidden;
-    }
-    .bg, .bg3-wrapper { position: absolute; inset: 0; overflow: hidden; }
-    .bg img, .bg3_a, .bg3_b { position: absolute; width: 100%; height: 100%; object-fit: cover; }
-    .bg3_a { clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%); }
-    .bg3_b { clip-path: polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%); }
-    .versus-line {
-      position: absolute; inset: 0;
-      clip-path: polygon(49.7% 0%, 50.3% 0%, 50.3% 100%, 49.7% 100%);
-      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(180,180,200,0.6));
-      opacity: 0.7; mix-blend-mode: screen;
-      animation: aura 3s ease-in-out infinite;
-    }
-    @keyframes aura { 0%,100%{opacity:.5}50%{opacity:.9;filter:blur(2px)} }
-    .overlay { position:absolute; inset:0; background:rgba(245,245,245,0.35); backdrop-filter:blur(3px); z-index:1; }
-    .container { position:relative; z-index:2; text-align:center; padding:20px; }
-    h1 { font-size:2em; margin-bottom:1em; text-shadow:0 0 10px rgba(255,255,255,0.6); }
-    button {
-      background:linear-gradient(90deg,#d0d0d5,#b8c0c8);
-      border:none;color:white;padding:16px 48px;
-      font-size:1.2em;border-radius:50px;
-      cursor:pointer;transition:all .3s;
-      box-shadow:0 0 20px rgba(180,180,200,.5);
-    }
-    button:disabled{opacity:.8;cursor:wait}
-    button:hover:enabled{transform:scale(1.05);box-shadow:0 0 30px rgba(180,180,200,.7)}
-    .info{margin-top:1em;font-size:.9em;color:#555;word-break:break-all}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LimeLinkku</title>
+<style>
+  :root {
+    --theme-color: #cfd3da;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    color: white;
+    background-color: #101214;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  h1 {
+    font-weight: 400;
+    font-size: 1.6em;
+    margin-bottom: 40px;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  }
+
+  button {
+    background: var(--theme-color);
+    border: none;
+    color: #1b1e22;
+    padding: 14px 40px;
+    font-size: 1.1em;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+  }
+
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
+  }
+
+  #background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    animation: fadeIn 1.5s ease;
+  }
+
+  /* Mode versus: 3 gambar penuh */
+  .versus {
+    background: 
+      url('bg3_b.webp') left center / 100% 100% no-repeat,
+      url('line.webp') center center / 100% 100% no-repeat,
+      url('bg3_a.webp') right center / 100% 100% no-repeat;
+    background-blend-mode: normal;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.25));
+    animation: auraPulse 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes auraPulse {
+    0% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.25)); }
+    100% { filter: drop-shadow(0 0 20px rgba(255,255,255,0.5)); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>
 </head>
 <body>
-  <div class="bg" id="bgContainer"></div>
-  <div class="overlay"></div>
-  <div class="container">
-    <h1 id="statusText">Mempersiapkan link</h1>
-    <button id="goBtn" disabled>Menunggu...</button>
-    <div class="info" id="infoText"></div>
-  </div>
+  <div id="background"></div>
+  <h1 id="status">Mempersiapkan link...</h1>
+  <button id="goBtn" disabled>Menunggu...</button>
 
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    const redirect = params.get('redirect') === 'true';
-    const countdown = parseInt(params.get('t')) || 5;
+    const code = params.get("code");
+    const t = parseInt(params.get("t") || "5");
+    const redirect = params.get("redirect") === "true";
+
+    // Pilihan background
+    const bgMode = Math.floor(Math.random() * 3);
+    const bgDiv = document.getElementById("background");
+    if (bgMode === 0) {
+      bgDiv.style.backgroundImage = "url('bg1.webp')";
+    } else if (bgMode === 1) {
+      bgDiv.style.backgroundImage = "url('bg2.webp')";
+    } else {
+      bgDiv.classList.add("versus");
+    }
+
+    const btn = document.getElementById("goBtn");
+    const status = document.getElementById("status");
 
     function base64UrlDecode(str) {
-      if (!str) return null;
-      str = str.replace(/-/g, '+').replace(/_/g, '/');
-      while (str.length % 4) str += '=';
-      try { return decodeURIComponent(escape(atob(str))); }
-      catch(e) { console.error('Decode gagal:', e); return null; }
+      try {
+        str = str.replace(/-/g, '+').replace(/_/g, '/');
+        const pad = str.length % 4 ? 4 - (str.length % 4) : 0;
+        str += "=".repeat(pad);
+        return decodeURIComponent(escape(atob(str)));
+      } catch {
+        return null;
+      }
     }
 
-    const decodedLink = base64UrlDecode(code);
-    const btn = document.getElementById('goBtn');
-    const info = document.getElementById('infoText');
-    const statusText = document.getElementById('statusText');
-    const bgContainer = document.getElementById('bgContainer');
-
-    // Coba load background acak
-    const r = Math.floor(Math.random() * 3);
-    if (r === 0) {
-      const img = new Image();
-      img.src = 'bg1.webp';
-      bgContainer.appendChild(img);
-    } else if (r === 1) {
-      const img = new Image();
-      img.src = 'bg2.webp';
-      bgContainer.appendChild(img);
-    } else {
-      const wrapper = document.createElement('div');
-      wrapper.classList.add('bg3-wrapper');
-      const imgA = new Image();
-      const imgB = new Image();
-      imgA.src = 'bg3_a.webp';
-      imgB.src = 'bg3_b.webp';
-      imgA.classList.add('bg3_a');
-      imgB.classList.add('bg3_b');
-      const divider = document.createElement('div');
-      divider.classList.add('versus-line');
-      wrapper.append(imgA, imgB, divider);
-      bgContainer.appendChild(wrapper);
-    }
-
-    // Tampilkan error jika gambar gagal diload
-    document.querySelectorAll('img').forEach(img => {
-      img.onerror = () => console.warn('⚠️ Gagal load gambar:', img.src);
-    });
-
-    // Countdown logic
-    if (decodedLink) {
-      info.textContent = `Decoded link: ${decodedLink}`;
-      let timeLeft = countdown;
-      btn.textContent = `${timeLeft}s`;
-
-      const timer = setInterval(() => {
-        timeLeft--;
-        btn.textContent = `${timeLeft}s`;
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          btn.disabled = false;
-          btn.textContent = "Go to link";
-          statusText.textContent = "Link siap";
-          if (redirect) window.location.href = decodedLink;
-        }
-      }, 1000);
-
-      btn.addEventListener('click', () => {
-        if (!btn.disabled) window.location.href = decodedLink;
-      });
-    } else {
-      statusText.textContent = "❌ Tidak ada code valid";
-      info.textContent = "Query ?code=<base64url> tidak ditemukan atau gagal decode.";
+    if (!code) {
+      status.textContent = "Kode link tidak ditemukan!";
+      btn.textContent = "Gagal memuat link";
       btn.disabled = true;
-      btn.textContent = "Invalid";
+    } else {
+      const decoded = base64UrlDecode(code);
+      if (!decoded || !/^https?:\/\//i.test(decoded)) {
+        status.textContent = "Kode link tidak valid!";
+        btn.textContent = "Link rusak";
+        btn.disabled = true;
+      } else {
+        let timeLeft = t;
+        btn.textContent = `Menunggu ${timeLeft}s...`;
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          if (timeLeft > 0) {
+            btn.textContent = `Menunggu ${timeLeft}s...`;
+          } else {
+            clearInterval(timer);
+            status.textContent = "Link siap!";
+            btn.textContent = "Go to link";
+            btn.disabled = false;
+
+            if (redirect) {
+              window.location.href = decoded;
+            }
+
+            btn.onclick = () => window.location.href = decoded;
+          }
+        }, 1000);
+      }
     }
-  });
   </script>
 </body>
 </html>
