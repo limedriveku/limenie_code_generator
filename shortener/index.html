@@ -6,8 +6,10 @@
 <title>LimeLinkku</title>
 <style>
   :root {
-    --silver-tone: rgba(200, 210, 220, 0.35);
-    --theme-color: #d0d4da;
+    --silver-tone: rgba(220, 230, 240, 0.25);
+    --theme-color: rgba(240, 245, 255, 0.85);
+    --aura-light: rgba(180, 210, 255, 0.35);
+    --aura-strong: rgba(210, 230, 255, 0.55);
   }
 
   html, body {
@@ -16,51 +18,88 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    background: #111318;
   }
 
   body {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     color: white;
     font-family: "Poppins", sans-serif;
     text-align: center;
-    background: #121316;
     position: relative;
   }
 
-  /* Background layer */
-  #bg {
+  /* Background layers */
+  .bg {
     position: absolute;
     inset: 0;
     background-position: center;
-    background-repeat: no-repeat;
     background-size: cover;
-    filter: blur(18px) brightness(1.05);
-    z-index: -2;
+    background-repeat: no-repeat;
+    filter: blur(8px) brightness(1.05);
+    transition: opacity 2.5s ease-in-out;
+    z-index: -3;
   }
 
-  /* Overlay silver gradient */
+  #bg1 { opacity: 1; }
+  #bg2, #bg3 { opacity: 0; }
+
+  /* Silver overlay */
   #overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, var(--silver-tone), rgba(40, 45, 50, 0.9));
+    background: radial-gradient(circle at center, var(--silver-tone), rgba(30, 35, 40, 0.8));
     mix-blend-mode: screen;
-    z-index: -1;
+    z-index: -2;
+    animation: aura 12s ease-in-out infinite alternate;
   }
 
-  h1 {
-    font-weight: 400;
-    font-size: 1.6em;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-    margin-bottom: 40px;
-    animation: fadeIn 2s ease;
+  @keyframes aura {
+    from { filter: drop-shadow(0 0 8px var(--aura-light)); }
+    to { filter: drop-shadow(0 0 20px var(--aura-strong)); }
   }
 
+  /* === FRIEREN BOX === */
+  .frieren-box {
+    background: rgba(240, 245, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 0 20px rgba(200, 220, 255, 0.25), inset 0 0 10px rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 40px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    animation: boxFadeIn 2s ease forwards;
+  }
+
+  @keyframes boxFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Status text with smooth transition */
+  #status {
+    font-size: 1.3em;
+    font-weight: 300;
+    text-shadow: 0 0 16px rgba(255, 255, 255, 0.4);
+    opacity: 1;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  #status.fade {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  /* Button style */
   button {
     background: var(--theme-color);
-    border: none;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.25);
     color: #1b1e22;
     padding: 14px 40px;
     font-size: 1.1em;
@@ -73,28 +112,44 @@
   button:hover {
     transform: scale(1.05);
     box-shadow: 0 0 18px rgba(255, 255, 255, 0.55);
+    background: rgba(245, 247, 255, 0.92);
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+  button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 </style>
 </head>
 <body>
-  <div id="bg"></div>
+  <!-- 3 layer background -->
+  <div id="bg1" class="bg"></div>
+  <div id="bg2" class="bg"></div>
+  <div id="bg3" class="bg"></div>
   <div id="overlay"></div>
 
-  <h1 id="status">Mempersiapkan link...</h1>
-  <button id="goBtn" disabled>Menunggu...</button>
+  <!-- Frieren box -->
+  <div class="frieren-box">
+    <h1 id="status">Mempersiapkan link...</h1>
+    <button id="goBtn" disabled>Menunggu...</button>
+  </div>
 
   <script>
-    // === Random background dari 3 pilihan ===
-    const bgList = ["bg1.webp", "bg2.webp", "bg3.webp"];
-    const chosenBg = bgList[Math.floor(Math.random() * bgList.length)];
-    document.getElementById("bg").style.backgroundImage = `url('${chosenBg}')`;
+    // === Background fade ===
+    const bgPaths = ["bg1.webp", "bg2.webp", "bg3.webp"];
+    const bgEls = [document.getElementById("bg1"), document.getElementById("bg2"), document.getElementById("bg3")];
 
-    // === Timer dan redirect handler ===
+    bgEls.forEach((el, i) => el.style.backgroundImage = `url('${bgPaths[i]}')`);
+
+    let current = 0;
+    setInterval(() => {
+      const next = (current + 1) % bgEls.length;
+      bgEls[current].style.opacity = "0";
+      bgEls[next].style.opacity = "1";
+      current = next;
+    }, 15000);
+
+    // === Timer & redirect ===
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const t = parseInt(params.get("t") || "5");
@@ -114,14 +169,22 @@
       }
     }
 
+    function smoothTextChange(text) {
+      status.classList.add("fade");
+      setTimeout(() => {
+        status.textContent = text;
+        status.classList.remove("fade");
+      }, 400);
+    }
+
     if (!code) {
-      status.textContent = "Kode link tidak ditemukan!";
+      smoothTextChange("Kode link tidak ditemukan!");
       btn.textContent = "Gagal memuat link";
       btn.disabled = true;
     } else {
       const decoded = base64UrlDecode(code);
       if (!decoded || !/^https?:\/\//i.test(decoded)) {
-        status.textContent = "Kode link tidak valid!";
+        smoothTextChange("Kode link tidak valid!");
         btn.textContent = "Link rusak";
         btn.disabled = true;
       } else {
@@ -134,14 +197,11 @@
             btn.textContent = `Menunggu ${timeLeft}s...`;
           } else {
             clearInterval(timer);
-            status.textContent = "Link siap!";
+            smoothTextChange("Link siap!");
             btn.textContent = "Go to link";
             btn.disabled = false;
 
-            if (redirect) {
-              window.location.href = decoded;
-            }
-
+            if (redirect) window.location.href = decoded;
             btn.onclick = () => window.location.href = decoded;
           }
         }, 1000);
