@@ -6,10 +6,9 @@
 <title>LimeLinkku</title>
 <style>
   :root {
-    --silver-tone: rgba(220, 230, 240, 0.15);
-    --theme-color: rgba(240, 245, 255, 0.9);
-    --aura-light: rgba(180, 210, 255, 0.25);
-    --aura-strong: rgba(210, 230, 255, 0.3);
+    --theme-glass: rgba(255, 255, 255, 0.12);
+    --theme-border: rgba(255, 255, 255, 0.25);
+    --btn-bg: rgba(255, 255, 255, 0.85);
   }
 
   html, body {
@@ -17,73 +16,60 @@
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
-    background: #dce3f1;
-  }
-
-  body {
+    font-family: "Poppins", sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: "Poppins", sans-serif;
-    color: white;
-    text-align: center;
-    position: relative;
+    background: #cfd8e6;
+    overflow: hidden;
   }
 
-  /* Background layer */
+  /* === Background === */
   .bg {
     position: absolute;
     inset: 0;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
+    z-index: -2;
     opacity: 1;
-    z-index: -3;
-    filter: brightness(1.05) contrast(1.1) blur(1.2px);
+    filter: brightness(1) contrast(1.05) saturate(1.05);
+    transition: opacity 1s ease-in-out;
   }
 
-  /* Light overlay (misty tone) */
+  /* Light mist overlay — sekarang jauh lebih transparan */
   #overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(255,255,255,0.12), rgba(180,190,210,0.25));
+    z-index: -1;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.05), rgba(200,200,220,0.1));
     mix-blend-mode: lighten;
-    z-index: -2;
-    animation: aura 14s ease-in-out infinite alternate;
   }
 
-  @keyframes aura {
-    from { filter: drop-shadow(0 0 10px var(--aura-light)); }
-    to { filter: drop-shadow(0 0 18px var(--aura-strong)); }
-  }
-
-  /* === FRIEREN BOX === */
+  /* === Box utama === */
   .frieren-box {
-    background: rgba(240, 245, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(8px) saturate(160%);
-    box-shadow: 0 0 25px rgba(200, 220, 255, 0.25), inset 0 0 8px rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--theme-border);
+    border-radius: 20px;
     padding: 40px 60px;
+    backdrop-filter: blur(10px) saturate(150%);
+    box-shadow: 0 0 20px rgba(255,255,255,0.1), inset 0 0 8px rgba(255,255,255,0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 25px;
-    animation: boxFadeIn 2s ease forwards;
+    animation: fadeIn 1s ease-out forwards;
   }
 
-  @keyframes boxFadeIn {
-    from { opacity: 0; transform: scale(0.96); }
-    to { opacity: 1; transform: scale(1); }
+  @keyframes fadeIn {
+    from {opacity: 0; transform: scale(0.96);}
+    to {opacity: 1; transform: scale(1);}
   }
 
-  /* Status text with fade */
   #status {
-    font-size: 1.3em;
-    font-weight: 300;
     color: #eef3ff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    font-size: 1.3em;
+    text-shadow: 0 0 8px rgba(255,255,255,0.3);
     transition: opacity 0.8s ease, transform 0.8s ease;
   }
 
@@ -92,28 +78,26 @@
     transform: translateY(8px);
   }
 
-  /* Button style */
   button {
-    background: var(--theme-color);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255,255,255,0.25);
-    color: #1b1e22;
-    padding: 14px 40px;
+    background: var(--btn-bg);
+    border: 1px solid var(--theme-border);
+    border-radius: 30px;
+    padding: 12px 36px;
     font-size: 1.1em;
-    border-radius: 40px;
+    color: #1a1d22;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(3px);
   }
 
   button:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
-    background: rgba(245, 247, 255, 0.92);
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 0 10px rgba(255,255,255,0.4);
   }
 
   button:disabled {
-    opacity: 0.8;
+    opacity: 0.7;
     cursor: not-allowed;
   }
 </style>
@@ -131,9 +115,10 @@
     // === RANDOM BACKGROUND ===
     const bgPaths = ["bg1.webp", "bg2.webp", "bg3.webp"];
     const randomBg = bgPaths[Math.floor(Math.random() * bgPaths.length)];
-    document.getElementById("bg").style.backgroundImage = `url('${randomBg}')`;
+    const bgEl = document.getElementById("bg");
+    bgEl.style.backgroundImage = `url('${randomBg}')`;
 
-    // === TIMER & REDIRECT ===
+    // === PARAMETER HANDLING ===
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const t = parseInt(params.get("t") || "5");
@@ -174,7 +159,6 @@
       } else {
         let timeLeft = t;
         btn.textContent = `Menunggu ${timeLeft}s...`;
-
         const timer = setInterval(() => {
           timeLeft--;
           if (timeLeft > 0) {
@@ -185,7 +169,7 @@
             btn.textContent = "Go to link";
             btn.disabled = false;
 
-            if (redirect) setTimeout(() => window.location.href = decoded, 1000);
+            if (redirect) setTimeout(() => window.location.href = decoded, 800);
             btn.onclick = () => window.location.href = decoded;
           }
         }, 1000);
