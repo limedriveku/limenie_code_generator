@@ -8,8 +8,8 @@
   :root {
     --silver-tone: rgba(220, 230, 240, 0.15);
     --theme-color: rgba(240, 245, 255, 0.9);
-    --aura-light: rgba(180, 210, 255, 0.3);
-    --aura-strong: rgba(210, 230, 255, 0.4);
+    --aura-light: rgba(180, 210, 255, 0.25);
+    --aura-strong: rgba(210, 230, 255, 0.3);
   }
 
   html, body {
@@ -40,14 +40,14 @@
     background-repeat: no-repeat;
     opacity: 1;
     z-index: -3;
-    filter: brightness(1.05) blur(3px);
+    filter: brightness(1.05) contrast(1.1) blur(1.2px);
   }
 
   /* Light overlay (misty tone) */
   #overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(255,255,255,0.25), rgba(180,190,210,0.45));
+    background: radial-gradient(circle at center, rgba(255,255,255,0.12), rgba(180,190,210,0.25));
     mix-blend-mode: lighten;
     z-index: -2;
     animation: aura 14s ease-in-out infinite alternate;
@@ -60,10 +60,10 @@
 
   /* === FRIEREN BOX === */
   .frieren-box {
-    background: rgba(240, 245, 255, 0.15);
+    background: rgba(240, 245, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(12px) saturate(160%);
-    box-shadow: 0 0 25px rgba(200, 220, 255, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px) saturate(160%);
+    box-shadow: 0 0 25px rgba(200, 220, 255, 0.25), inset 0 0 8px rgba(255, 255, 255, 0.08);
     border-radius: 24px;
     padding: 40px 60px;
     display: flex;
@@ -83,7 +83,7 @@
     font-size: 1.3em;
     font-weight: 300;
     color: #eef3ff;
-    text-shadow: 0 0 16px rgba(255, 255, 255, 0.4);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     transition: opacity 0.8s ease, transform 0.8s ease;
   }
 
@@ -95,7 +95,7 @@
   /* Button style */
   button {
     background: var(--theme-color);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(5px);
     border: 1px solid rgba(255,255,255,0.25);
     color: #1b1e22;
     padding: 14px 40px;
@@ -103,12 +103,12 @@
     border-radius: 40px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 0 14px rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
   }
 
   button:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 18px rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
     background: rgba(245, 247, 255, 0.92);
   }
 
