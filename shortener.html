@@ -1,119 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frieren Link Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      height: 100vh;
-      overflow: hidden;
-      font-family: 'Poppins', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f0f4fb;
-      position: relative;
-      color: #333;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frieren Portal 🌫️</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Sawarabi+Mincho&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e6e8ed;
+    position: relative;
+    color: #333;
+  }
 
-    /* Latar belakang karakter Frieren */
-    .bg-image {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      width: 50%;
-      max-width: 600px;
-      height: auto;
-      opacity: 0.6;
-      pointer-events: none;
-      z-index: 1;
-    }
+  .bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.65;
+    z-index: 1;
+  }
 
-    .container {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      padding: 20px;
-      max-width: 90%;
-    }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top right, rgba(255,255,255,0.6), rgba(200,200,200,0.2));
+    z-index: 1;
+  }
 
-    h1 {
-      font-size: 2.4em;
-      margin-bottom: 1.2em;
-      color: #2f2a3e;
-      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
-    }
+  .container {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+  }
 
-    button {
-      background: linear-gradient(90deg, #8c7afe, #a3d8ff);
-      border: none;
-      color: white;
-      padding: 16px 48px;
-      font-size: 1.2em;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
-      box-shadow: 0 0 20px rgba(140, 122, 254, 0.6);
-    }
+  h1 {
+    font-family: 'Sawarabi Mincho', serif;
+    font-size: 2.4em;
+    color: #2d2d2d;
+    text-shadow: 0 2px 4px rgba(255,255,255,0.8);
+  }
 
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 30px rgba(140, 122, 254, 0.9);
-    }
+  button {
+    background: linear-gradient(90deg, #bfc5d2, #d6e1ef);
+    border: none;
+    color: #1c1c1c;
+    padding: 14px 48px;
+    font-size: 18px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 20px rgba(190, 190, 200, 0.5);
+  }
 
-    .info {
-      margin-top: 16px;
-      font-size: 0.9em;
-      color: #555;
-      word-break: break-all;
-    }
-  </style>
+  button:hover:enabled {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(210, 210, 220, 0.8);
+  }
+
+  button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .info {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #555;
+  }
+
+  .timer {
+    margin-top: 10px;
+    font-size: 15px;
+    color: #666;
+  }
+</style>
 </head>
 <body>
-  <!-- Ganti src ke gambar Frieren PNG transparan milikmu atau yang bebas digunakan -->
-  <img class="bg-image" src="https://4kwallpapers.com/anime/frieren-beyond-15157.html" alt="Frieren Background" />
 
-  <div class="container">
-    <h1>Portal Frieren ✨</h1>
-    <button id="goBtn">Go to Link</button>
-    <div class="info" id="infoText"></div>
-  </div>
+<div class="bg" id="bg"></div>
+<div class="overlay"></div>
 
-  <script>
-    function base64UrlDecode(str) {
-      str = str.replace(/-/g, '+').replace(/_/g, '/');
-      while (str.length % 4) str += '=';
-      try {
-        return decodeURIComponent(escape(atob(str)));
-      } catch (e) {
-        return null;
-      }
-    }
+<div class="container">
+  <h1>Frieren Portal 🌫️</h1>
+  <button id="goBtn" disabled>Preparing...</button>
+  <div class="timer" id="timerText"></div>
+  <div class="info" id="infoText"></div>
+</div>
 
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    const decodedLink = code ? base64UrlDecode(code) : null;
+<script>
+function base64UrlDecode(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  try { return decodeURIComponent(escape(atob(str))); }
+  catch { return null; }
+}
 
-    const btn = document.getElementById('goBtn');
-    const info = document.getElementById('infoText');
+// ambil parameter URL
+const params = new URLSearchParams(window.location.search);
+const code = params.get('code');
+const t = parseInt(params.get('t')) || 5;
+const redirect = params.get('redirect') === 'true';
 
-    if (decodedLink) {
-      info.innerText = `Decoded link: ${decodedLink}`;
-      btn.addEventListener('click', () => {
-        window.location.href = decodedLink;
-      });
+const decodedLink = code ? base64UrlDecode(code) : null;
+
+// acak background (bg1.webp atau bg2.webp)
+const bgList = ['bg1.webp', 'bg2.webp'];
+const chosenBg = bgList[Math.floor(Math.random() * bgList.length)];
+document.getElementById('bg').style.backgroundImage = `url('${chosenBg}')`;
+
+const btn = document.getElementById('goBtn');
+const info = document.getElementById('infoText');
+const timerText = document.getElementById('timerText');
+
+if (!decodedLink) {
+  info.innerText = "❌ Query ?code=<base64url> tidak ditemukan atau tidak valid.";
+  btn.disabled = true;
+  btn.innerText = "Invalid Code";
+} else if (redirect) {
+  // langsung redirect tanpa menampilkan halaman
+  window.location.href = decodedLink;
+} else {
+  let timeLeft = t;
+  timerText.innerText = `Button aktif dalam ${timeLeft} detik...`;
+
+  const countdown = setInterval(() => {
+    timeLeft--;
+    if (timeLeft > 0) {
+      timerText.innerText = `Button aktif dalam ${timeLeft} detik...`;
     } else {
-      info.innerText = "❌ Query ?code=<base64url> tidak ditemukan atau tidak valid.";
-      btn.disabled = true;
-      btn.style.opacity = "0.6";
-      btn.style.cursor = "not-allowed";
+      clearInterval(countdown);
+      btn.disabled = false;
+      btn.innerText = "Go to Link";
+      timerText.innerText = "";
     }
-  </script>
+  }, 1000);
+
+  info.innerText = `Decoded link: ${decodedLink}`;
+  btn.addEventListener('click', () => {
+    window.location.href = decodedLink;
+  });
+}
+</script>
 </body>
 </html>
