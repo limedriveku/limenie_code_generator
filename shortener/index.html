@@ -3,175 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LimeLinkku</title>
+<title>Link Generator</title>
 <style>
-  :root {
-    --theme-glass: rgba(255, 255, 255, 0.15);
-    --theme-border: rgba(255, 255, 255, 0.25);
-    --btn-bg: rgba(255, 255, 255, 0.85);
-  }
-
-  html, body {
+  body {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
-    font-family: "Poppins", sans-serif;
+    overflow: hidden;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #cfd8e6;
-    overflow: hidden;
+    background-color: #dfe6ec;
+    font-family: 'Segoe UI', sans-serif;
   }
 
-  /* === Background === */
-  .bg {
-    position: absolute;
-    inset: 0;
-    background-position: center;
+  /* Background */
+  #bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-size: cover;
-    background-repeat: no-repeat;
-    z-index: -2;
-    opacity: 1;
-    filter: none; /* <- blur dihapus total */
-  }
-
-  /* Overlay ringan (hampir tak terlihat) */
-  #overlay {
-    position: absolute;
-    inset: 0;
+    background-position: center;
+    filter: brightness(0.95);
+    transition: opacity 2s ease-in-out;
     z-index: -1;
-    background: rgba(255,255,255,0.04);
-    mix-blend-mode: lighten;
   }
 
-  /* === Box utama === */
-  .frieren-box {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--theme-border);
-    border-radius: 20px;
-    padding: 40px 60px;
-    box-shadow: 0 0 20px rgba(255,255,255,0.15), inset 0 0 8px rgba(255,255,255,0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-    animation: fadeIn 1s ease-out forwards;
-  }
-
-  @keyframes fadeIn {
-    from {opacity: 0; transform: scale(0.96);}
-    to {opacity: 1; transform: scale(1);}
-  }
-
-  #status {
-    color: #eef3ff;
-    font-size: 1.3em;
-    text-shadow: 0 0 8px rgba(255,255,255,0.3);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-
-  #status.fade {
+  #bg.fade {
     opacity: 0;
-    transform: translateY(8px);
+  }
+
+  /* Box */
+  .box {
+    background: rgba(245, 246, 250, 0.85);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(180, 190, 200, 0.4);
+    text-align: center;
+    padding: 40px;
+    max-width: 350px;
+    transition: background 1s ease;
+  }
+
+  h1 {
+    color: #4b5d74;
+    margin-bottom: 20px;
+  }
+
+  .status {
+    color: #5f7186;
+    font-size: 16px;
+    margin-bottom: 20px;
+    transition: color 1s, opacity 1s ease-in-out;
   }
 
   button {
-    background: var(--btn-bg);
-    border: 1px solid var(--theme-border);
-    border-radius: 30px;
-    padding: 12px 36px;
-    font-size: 1.1em;
-    color: #1a1d22;
+    background: rgba(255, 255, 255, 0.85);
+    border: 2px solid #a0b3c1;
+    color: #4b5d74;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
   }
 
   button:hover {
-    transform: scale(1.05);
-    background: rgba(255,255,255,0.9);
-    box-shadow: 0 0 10px rgba(255,255,255,0.4);
-  }
-
-  button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 10px rgba(100, 120, 140, 0.3);
   }
 </style>
 </head>
 <body>
-  <div id="bg" class="bg"></div>
-  <div id="overlay"></div>
 
-  <div class="frieren-box">
-    <h1 id="status">Mempersiapkan link...</h1>
-    <button id="goBtn" disabled>Menunggu...</button>
-  </div>
+<div id="bg"></div>
 
-  <script>
-    // === RANDOM BACKGROUND ===
-    const bgPaths = ["bg1.webp", "bg2.webp", "bg3.webp"];
-    const randomBg = bgPaths[Math.floor(Math.random() * bgPaths.length)];
-    const bgEl = document.getElementById("bg");
-    bgEl.style.backgroundImage = `url('${randomBg}')`;
+<div class="box">
+  <h1>Link Generator</h1>
+  <div id="status" class="status">Mempersiapkan link...</div>
+  <button id="generateBtn">Buat Link</button>
+</div>
 
-    // === PARAMETER HANDLING ===
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    const t = parseInt(params.get("t") || "5");
-    const redirect = params.get("redirect") === "true";
+<script>
+  // Background paths (pakai path relatif terhadap folder shortener)
+  const bgPaths = [
+    "bg1.webp",
+    "bg2.webp",
+    "bg3.webp"
+  ];
 
-    const btn = document.getElementById("goBtn");
-    const status = document.getElementById("status");
+  const bgEl = document.getElementById("bg");
+  let currentIndex = 0;
 
-    function base64UrlDecode(str) {
-      try {
-        str = str.replace(/-/g, '+').replace(/_/g, '/');
-        const pad = str.length % 4 ? 4 - (str.length % 4) : 0;
-        str += "=".repeat(pad);
-        return decodeURIComponent(escape(atob(str)));
-      } catch {
-        return null;
-      }
-    }
+  function setBackground(index) {
+    bgEl.style.backgroundImage = `url('${bgPaths[index]}')`;
+  }
 
-    function smoothTextChange(text) {
-      status.classList.add("fade");
-      setTimeout(() => {
-        status.textContent = text;
-        status.classList.remove("fade");
-      }, 400);
-    }
+  // Fade transition antar background
+  function nextBackground() {
+    bgEl.classList.add('fade');
+    setTimeout(() => {
+      currentIndex = (currentIndex + 1) % bgPaths.length;
+      setBackground(currentIndex);
+      bgEl.classList.remove('fade');
+    }, 2000);
+  }
 
-    if (!code) {
-      smoothTextChange("Kode link tidak ditemukan!");
-      btn.textContent = "Gagal memuat link";
-      btn.disabled = true;
-    } else {
-      const decoded = base64UrlDecode(code);
-      if (!decoded || !/^https?:\/\//i.test(decoded)) {
-        smoothTextChange("Kode link tidak valid!");
-        btn.textContent = "Link rusak";
-        btn.disabled = true;
-      } else {
-        let timeLeft = t;
-        btn.textContent = `Menunggu ${timeLeft}s...`;
-        const timer = setInterval(() => {
-          timeLeft--;
-          if (timeLeft > 0) {
-            btn.textContent = `Menunggu ${timeLeft}s...`;
-          } else {
-            clearInterval(timer);
-            smoothTextChange("Link siap!");
-            btn.textContent = "Go to link";
-            btn.disabled = false;
+  // Mulai background random + rotasi tiap 10 detik
+  setBackground(Math.floor(Math.random() * bgPaths.length));
+  setInterval(nextBackground, 10000);
 
-            if (redirect) setTimeout(() => window.location.href = decoded, 800);
-            btn.onclick = () => window.location.href = decoded;
-          }
-        }, 1000);
-      }
-    }
-  </script>
+  // Tombol interaksi
+  const statusEl = document.getElementById('status');
+  const btn = document.getElementById('generateBtn');
+
+  btn.addEventListener('click', () => {
+    statusEl.style.opacity = 0.5;
+    statusEl.textContent = "Mempersiapkan link...";
+    btn.disabled = true;
+
+    setTimeout(() => {
+      statusEl.textContent = "Link siap!";
+      statusEl.style.opacity = 1;
+      btn.disabled = false;
+    }, 2000);
+  });
+</script>
+
 </body>
 </html>
