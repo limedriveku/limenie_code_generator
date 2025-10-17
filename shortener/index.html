@@ -6,8 +6,8 @@
 <title>LimeLinkku</title>
 <style>
   :root {
-    --silver-tone: rgba(210, 220, 230, 0.3);
-    --theme-color: #d8dce3;
+    --silver-tone: rgba(200, 210, 220, 0.35);
+    --theme-color: #d0d4da;
   }
 
   html, body {
@@ -16,7 +16,6 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #111318;
   }
 
   body {
@@ -27,37 +26,28 @@
     color: white;
     font-family: "Poppins", sans-serif;
     text-align: center;
+    background: #121316;
     position: relative;
   }
 
-  /* Layer background untuk crossfade */
-  .bg {
+  /* Background layer */
+  #bg {
     position: absolute;
     inset: 0;
     background-position: center;
-    background-size: cover;
     background-repeat: no-repeat;
-    filter: blur(20px) brightness(1.1);
-    transition: opacity 2.5s ease-in-out;
-    z-index: -3;
+    background-size: cover;
+    filter: blur(18px) brightness(1.05);
+    z-index: -2;
   }
 
-  #bg1 { opacity: 1; }
-  #bg2, #bg3 { opacity: 0; }
-
-  /* Overlay lembut dengan tone Frieren */
+  /* Overlay silver gradient */
   #overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, var(--silver-tone), rgba(30, 35, 40, 0.95));
+    background: radial-gradient(circle at center, var(--silver-tone), rgba(40, 45, 50, 0.9));
     mix-blend-mode: screen;
-    z-index: -2;
-    animation: aura 10s ease-in-out infinite alternate;
-  }
-
-  @keyframes aura {
-    from { filter: drop-shadow(0 0 8px rgba(255,255,255,0.2)); }
-    to { filter: drop-shadow(0 0 20px rgba(180,210,255,0.4)); }
+    z-index: -1;
   }
 
   h1 {
@@ -92,31 +82,17 @@
 </style>
 </head>
 <body>
-  <!-- 3 layer background untuk fade -->
-  <div id="bg1" class="bg"></div>
-  <div id="bg2" class="bg"></div>
-  <div id="bg3" class="bg"></div>
+  <div id="bg"></div>
   <div id="overlay"></div>
 
   <h1 id="status">Mempersiapkan link...</h1>
   <button id="goBtn" disabled>Menunggu...</button>
 
   <script>
-    // === Setup background ===
-    const bgPaths = ["bg1.webp", "bg2.webp", "bg3.webp"];
-    const bgEls = [document.getElementById("bg1"), document.getElementById("bg2"), document.getElementById("bg3")];
-
-    bgEls.forEach((el, i) => {
-      el.style.backgroundImage = `url('${bgPaths[i]}')`;
-    });
-
-    let current = 0;
-    setInterval(() => {
-      const next = (current + 1) % bgEls.length;
-      bgEls[current].style.opacity = "0";
-      bgEls[next].style.opacity = "1";
-      current = next;
-    }, 15000); // Ganti background tiap 15 detik
+    // === Random background dari 3 pilihan ===
+    const bgList = ["bg1.webp", "bg2.webp", "bg3.webp"];
+    const chosenBg = bgList[Math.floor(Math.random() * bgList.length)];
+    document.getElementById("bg").style.backgroundImage = `url('${chosenBg}')`;
 
     // === Timer dan redirect handler ===
     const params = new URLSearchParams(window.location.search);
