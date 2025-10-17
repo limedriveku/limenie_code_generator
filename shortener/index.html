@@ -1,95 +1,42 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LimeLinkku</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin: 0; height: 100vh; display: flex;
+      align-items: center; justify-content: center;
       font-family: 'Poppins', sans-serif;
-      background: #f5f5f5;
-      color: #2f2a3e;
-      position: relative;
-      overflow: hidden;
+      background: #f5f5f5; color: #2f2a3e; position: relative; overflow: hidden;
     }
-
-    /* ---------- Background styles ---------- */
-    .bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-    .bg img { position: absolute; width: 100%; height: 100%; object-fit: cover; }
-
-    /* Mode versus */
-    .bg3-wrapper { position: absolute; inset: 0; overflow: hidden; }
-    .bg3_a, .bg3_b { position: absolute; top: 0; width: 100%; height: 100%; object-fit: cover; }
-    .bg3_a { clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%); right: 0; left: auto; }
+    .bg, .bg3-wrapper { position: absolute; inset: 0; overflow: hidden; }
+    .bg img, .bg3_a, .bg3_b { position: absolute; width: 100%; height: 100%; object-fit: cover; }
+    .bg3_a { clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%); }
     .bg3_b { clip-path: polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%); }
     .versus-line {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      position: absolute; inset: 0;
       clip-path: polygon(49.7% 0%, 50.3% 0%, 50.3% 100%, 49.7% 100%);
       background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(180,180,200,0.6));
-      mix-blend-mode: screen;
-      opacity: 0.7;
+      opacity: 0.7; mix-blend-mode: screen;
       animation: aura 3s ease-in-out infinite;
     }
-
-    @keyframes aura {
-      0%,100% { opacity: 0.5; filter: blur(0px); }
-      50% { opacity: 0.9; filter: blur(2px); }
-    }
-
-    /* Overlay */
-    .overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(245,245,245,0.35);
-      backdrop-filter: blur(3px);
-      z-index: 1;
-    }
-
-    /* ---------- Content ---------- */
-    .container {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      padding: 20px;
-    }
-
-    h1 {
-      font-size: 2em;
-      margin-bottom: 1em;
-      text-shadow: 0 0 10px rgba(255,255,255,0.6);
-    }
-
+    @keyframes aura { 0%,100%{opacity:.5}50%{opacity:.9;filter:blur(2px)} }
+    .overlay { position:absolute; inset:0; background:rgba(245,245,245,0.35); backdrop-filter:blur(3px); z-index:1; }
+    .container { position:relative; z-index:2; text-align:center; padding:20px; }
+    h1 { font-size:2em; margin-bottom:1em; text-shadow:0 0 10px rgba(255,255,255,0.6); }
     button {
-      background: linear-gradient(90deg, #d0d0d5, #b8c0c8);
-      border: none;
-      color: #fff;
-      padding: 16px 48px;
-      font-size: 1.2em;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 0 20px rgba(180, 180, 200, 0.5);
+      background:linear-gradient(90deg,#d0d0d5,#b8c0c8);
+      border:none;color:white;padding:16px 48px;
+      font-size:1.2em;border-radius:50px;
+      cursor:pointer;transition:all .3s;
+      box-shadow:0 0 20px rgba(180,180,200,.5);
     }
-    button:disabled { opacity: 0.8; cursor: wait; }
-    button:hover:enabled {
-      transform: scale(1.05);
-      box-shadow: 0 0 30px rgba(180, 180, 200, 0.7);
-    }
-
-    .info {
-      margin-top: 1em;
-      font-size: 0.9em;
-      color: #555;
-      word-break: break-all;
-    }
+    button:disabled{opacity:.8;cursor:wait}
+    button:hover:enabled{transform:scale(1.05);box-shadow:0 0 30px rgba(180,180,200,.7)}
+    .info{margin-top:1em;font-size:.9em;color:#555;word-break:break-all}
   </style>
 </head>
 <body>
@@ -102,39 +49,41 @@
   </div>
 
   <script>
+  document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     const redirect = params.get('redirect') === 'true';
     const countdown = parseInt(params.get('t')) || 5;
 
     function base64UrlDecode(str) {
+      if (!str) return null;
       str = str.replace(/-/g, '+').replace(/_/g, '/');
       while (str.length % 4) str += '=';
       try { return decodeURIComponent(escape(atob(str))); }
-      catch { return null; }
+      catch(e) { console.error('Decode gagal:', e); return null; }
     }
 
-    const decodedLink = code ? base64UrlDecode(code) : null;
+    const decodedLink = base64UrlDecode(code);
     const btn = document.getElementById('goBtn');
     const info = document.getElementById('infoText');
     const statusText = document.getElementById('statusText');
     const bgContainer = document.getElementById('bgContainer');
 
-    // Pilih background acak: bg1, bg2, atau mode versus
+    // Coba load background acak
     const r = Math.floor(Math.random() * 3);
     if (r === 0) {
-      const img = document.createElement('img');
+      const img = new Image();
       img.src = 'bg1.webp';
       bgContainer.appendChild(img);
     } else if (r === 1) {
-      const img = document.createElement('img');
+      const img = new Image();
       img.src = 'bg2.webp';
       bgContainer.appendChild(img);
     } else {
       const wrapper = document.createElement('div');
       wrapper.classList.add('bg3-wrapper');
-      const imgA = document.createElement('img');
-      const imgB = document.createElement('img');
+      const imgA = new Image();
+      const imgB = new Image();
       imgA.src = 'bg3_a.webp';
       imgB.src = 'bg3_b.webp';
       imgA.classList.add('bg3_a');
@@ -144,6 +93,11 @@
       wrapper.append(imgA, imgB, divider);
       bgContainer.appendChild(wrapper);
     }
+
+    // Tampilkan error jika gambar gagal diload
+    document.querySelectorAll('img').forEach(img => {
+      img.onerror = () => console.warn('⚠️ Gagal load gambar:', img.src);
+    });
 
     // Countdown logic
     if (decodedLink) {
@@ -167,4 +121,12 @@
         if (!btn.disabled) window.location.href = decodedLink;
       });
     } else {
-      info.textContent = "❌ Query ?c
+      statusText.textContent = "❌ Tidak ada code valid";
+      info.textContent = "Query ?code=<base64url> tidak ditemukan atau gagal decode.";
+      btn.disabled = true;
+      btn.textContent = "Invalid";
+    }
+  });
+  </script>
+</body>
+</html>
